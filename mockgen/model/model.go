@@ -343,6 +343,12 @@ func typeFromType(t reflect.Type) (Type, error) {
 	}
 
 	if imp := t.PkgPath(); imp != "" {
+		// If vendor is included in the path, take the last package in
+		// the vendored path.
+		vendorPieces := strings.Split(imp, "/vendor/")
+		if len(vendorPieces) > 1 {
+			imp = vendorPieces[len(vendorPieces)-1]
+		}
 		return &NamedType{
 			Package: imp,
 			Type:    t.Name(),
